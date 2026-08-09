@@ -1,9 +1,8 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, useRouterState } from "@tanstack/react-router";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { AnimatedBackground } from "../components/AnimatedBackground";
 
-import appCss from "../styles.css?url";
 import nayeemFavicon from "../assets/nayeem.jpeg?url";
 
 function NotFoundComponent() {
@@ -31,8 +30,6 @@ function NotFoundComponent() {
 export const Route = createRootRoute({
   head: () => ({
     meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Syed Nayeem Hossain — IT Manager & Infrastructure Expert" },
       {
         name: "description",
@@ -49,36 +46,29 @@ export const Route = createRootRoute({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/jpeg", href: nayeemFavicon },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
-      },
     ],
   }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
 
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
-
 function RootComponent() {
+  const location = useRouterState({ select: (s) => s.location.pathname });
+  const isAdmin = location.startsWith("/admin");
+
+  if (isAdmin) {
+    return (
+      <>
+        <HeadContent />
+        <Outlet />
+      </>
+    );
+  }
+
   return (
     <>
+      <HeadContent />
       <AnimatedBackground />
       <Navbar />
       <main className="pt-24">
