@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Award, GraduationCap, Languages, Users } from "lucide-react";
 import { Reveal } from "../components/Reveal";
 import { SectionHeading } from "../components/SectionHeading";
+import { Skeleton, SkeletonText, SkeletonParagraph } from "../components/Skeleton";
+import { useProfile, useSkills } from "../hooks/usePortfolioData";
 import nayeem from "@/assets/nayeem.jpeg";
 
 export const Route = createFileRoute("/about")({
@@ -20,33 +22,13 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
-const skills = [
-  "IT Strategy & Leadership",
-  "Cloud & Data Centers",
-  "ERP Systems (JDE, PeopleSoft)",
-  "Cybersecurity & Compliance",
-  "Project Management (PMP)",
-  "Automation & Process Improvement",
-];
-
-const certifications = [
-  "PMP — Project Management Professional",
-  "RedHat RHCSA · RHCE · RHCVA",
-  "Cisco CCNA",
-  "Microsoft Azure Administrator",
-  "CISSP (Training Completed)",
-];
-
-const education = [
-  {
-    degree: "B.Sc. in Computer Science & Engineering",
-    school: "Daffodil International University, Dhaka",
-  },
-  { degree: "Higher Secondary Certificate", school: "CODA, Dhaka" },
-  { degree: "Secondary School Certificate", school: "CODA, Dhaka" },
-];
-
 function AboutPage() {
+  const profileQuery = useProfile();
+  const skillsQuery = useSkills();
+
+  const profile = profileQuery.data;
+  const skills = skillsQuery.data || [];
+
   return (
     <div className="px-6">
       <section className="mx-auto max-w-6xl py-12">
@@ -60,29 +42,35 @@ function AboutPage() {
         <div className="mt-16 grid lg:grid-cols-[1fr_1.4fr] gap-12 items-start">
           <Reveal>
             <div className="relative max-w-xs mx-auto lg:mx-0">
-              <div className="absolute -inset-4 bg-gradient-primary rounded-3xl blur-2xl opacity-30" />
-              <div className="relative rounded-3xl overflow-hidden border border-primary/30 shadow-elegant">
-                <img src={nayeem} alt="Syed Nayeem Hossain" className="w-full" />
-              </div>
+              {profile ? (
+                <>
+                  <div className="absolute -inset-4 bg-gradient-primary rounded-3xl blur-2xl opacity-30" />
+                  <div className="relative rounded-3xl overflow-hidden border border-primary/30 shadow-elegant">
+                    <img src={profile.photo || nayeem} alt={profile.name} className="w-full" />
+                  </div>
+                </>
+              ) : (
+                <Skeleton className="h-96 rounded-3xl" />
+              )}
             </div>
           </Reveal>
 
           <Reveal delay={0.15}>
-            <div className="space-y-5 text-muted-foreground leading-relaxed">
-              <p>
-                Proven expertise in <span className="text-foreground font-semibold">Tier-III Data Centers</span>,
-                ERP Implementations, and IT Security — driving multimillion-dollar efficiencies and ensuring
-                business continuity across global operations.
-              </p>
-              <p>
-                Certified in <span className="text-foreground font-semibold">RedHat, Cisco, and PMP</span>,
-                with a strong track record of delivering projects on time, on budget, and aligned with business growth.
-              </p>
-              <p>
-                I believe great IT leadership combines deep technical fluency with the discipline of project
-                management — and a relentless focus on outcomes that move the business forward.
-              </p>
-            </div>
+            {profile ? (
+              <div className="space-y-5 text-muted-foreground leading-relaxed">
+                {profile.bio.map((paragraph: string, i: number) => (
+                  <p key={i}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-5">
+                <SkeletonParagraph />
+                <SkeletonParagraph />
+                <SkeletonParagraph />
+              </div>
+            )}
           </Reveal>
         </div>
 
@@ -90,54 +78,85 @@ function AboutPage() {
         <div className="mt-24 grid lg:grid-cols-2 gap-6">
           <Reveal>
             <Card icon={<Award size={20} />} title="Key Skills">
-              <ul className="space-y-3">
-                {skills.map((s, i) => (
-                  <motion.li
-                    key={s}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    className="flex items-start gap-3 text-sm"
-                  >
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                    <span>{s}</span>
-                  </motion.li>
-                ))}
-              </ul>
+              {skillsQuery.isLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <SkeletonText key={i} />
+                  ))}
+                </div>
+              ) : (
+                <ul className="space-y-3">
+                  {skills.map((s: any, i: number) => (
+                    <motion.li
+                      key={s._id}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-start gap-3 text-sm"
+                    >
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                      <span>{s.title}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              )}
             </Card>
           </Reveal>
 
           <Reveal delay={0.1}>
             <Card icon={<Award size={20} />} title="Certifications">
-              <ul className="space-y-3">
-                {certifications.map((c, i) => (
-                  <motion.li
-                    key={c}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    className="flex items-start gap-3 text-sm"
-                  >
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
-                    <span>{c}</span>
-                  </motion.li>
-                ))}
-              </ul>
+              {profileQuery.isLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <SkeletonText key={i} />
+                  ))}
+                </div>
+              ) : (
+                <ul className="space-y-3">
+                  {profile?.bio[1] ? (
+                    <motion.li
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      className="flex items-start gap-3 text-sm"
+                    >
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+                      <span>{profile.bio[1]}</span>
+                    </motion.li>
+                  ) : null}
+                </ul>
+              )}
             </Card>
           </Reveal>
 
           <Reveal>
             <Card icon={<GraduationCap size={20} />} title="Education">
-              <ul className="space-y-4">
-                {education.map((e) => (
-                  <li key={e.degree}>
-                    <p className="font-semibold text-foreground text-sm">{e.degree}</p>
-                    <p className="text-sm text-muted-foreground mt-0.5">{e.school}</p>
+              {profileQuery.isLoading ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i}>
+                      <SkeletonText />
+                      <Skeleton className="h-3 w-24 mt-2" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <ul className="space-y-4">
+                  <li>
+                    <p className="font-semibold text-foreground text-sm">B.Sc. in Computer Science & Engineering</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">Daffodil International University, Dhaka</p>
                   </li>
-                ))}
-              </ul>
+                  <li>
+                    <p className="font-semibold text-foreground text-sm">Higher Secondary Certificate</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">CODA, Dhaka</p>
+                  </li>
+                  <li>
+                    <p className="font-semibold text-foreground text-sm">Secondary School Certificate</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">CODA, Dhaka</p>
+                  </li>
+                </ul>
+              )}
             </Card>
           </Reveal>
 
