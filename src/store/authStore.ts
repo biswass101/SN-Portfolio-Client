@@ -5,6 +5,7 @@ interface AdminUser {
   name: string;
   email: string;
   id?: string;
+  profilePhoto?: string;
 }
 
 interface AuthState {

@@ -18,10 +18,15 @@ function AdminLogin() {
   const [showPass, setShowPass] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: (data: { email: string; password: string }) => api.post('/auth/login', data),
+    mutationFn: async (data: { email: string; password: string }) => {
+      const loginRes = await api.post('/auth/login', data);
+      const profileRes = await api.get('/profile').catch(() => null);
+      return { loginRes, profileRes };
+    },
     onSuccess: (res: any) => {
-      const { token, name, email: resEmail } = res.data.data;
-      useAuthStore.setState({ token, user: { name, email: resEmail }, isAuthenticated: true });
+      const { token, name, email: resEmail } = res.loginRes.data.data;
+      const profilePhoto = res.profileRes?.data?.data?.photo || undefined;
+      useAuthStore.setState({ token, user: { name, email: resEmail, profilePhoto }, isAuthenticated: true });
       localStorage.setItem('admin_token', token);
       toast.success('Welcome back!');
       setTimeout(() => navigate({ to: '/admin/dashboard', replace: true }), 500);

@@ -1,13 +1,14 @@
-import { createFileRoute, Link, Outlet, useNavigate, useRouter } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet, useNavigate, useRouter, useLocation } from '@tanstack/react-router';
 import { useState } from 'react';
 import {
   LayoutDashboard, FolderOpen, Briefcase, Zap, MessageSquare, User, LogOut,
   Menu, X, ChevronRight, Settings, ExternalLink,
 } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useAuth } from '@/context/AuthContext';
+import { useAuthStore } from '@/store/authStore';
 import { api } from '@/lib/api';
+import { Profile } from '@/types';
 
 export const Route = createFileRoute('/admin/_auth')({
   component: AdminLayout,
@@ -24,16 +25,25 @@ const navItems = [
 ];
 
 function AdminLayout() {
-  const { clearAuth, user } = useAuth();
+  const { user } = useAuthStore();
+  const authStore = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const currentPath = router.state.location.pathname;
+  const currentPath = location.pathname;
+
+  const { data, isLoading } = useQuery<Profile>({
+      queryKey: ['profile'],
+      queryFn: () => api.get('/profile').then((r) => r.data.data).catch(() => null),
+  });
+
+  console.log('Current Path:', currentPath); // Debugging line to check the current path
 
   const logoutMutation = useMutation({
     mutationFn: () => api.post('/auth/logout'),
     onSettled: () => {
-      clearAuth();
+      authStore.clearAuth();
       toast.success('Logged out');
       navigate({ to: '/admin/login' });
     },
@@ -48,10 +58,10 @@ function AdminLayout() {
       >
         <div className="flex items-center justify-between px-6 h-16 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary grid place-items-center shadow-glow">
-              <LayoutDashboard size={14} className="text-primary-foreground" />
+            <div className="h-8 w-8 rounded-full grid place-items-center overflow-hidden">
+              <img src={data?.photo} alt={data?.name + 's-profile-picture'}/>
             </div>
-            <span className="font-display font-bold text-sm">SN Admin</span>
+            <span className="font-display font-bold text-sm">{data?.name}</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground">
             <X size={18} />
@@ -65,7 +75,9 @@ function AdminLayout() {
               <Link
                 key={item.to}
                 to={item.to as Parameters<typeof Link>[0]['to']}
-                onClick={() => setSidebarOpen(false)}
+                onClick={() => {
+                  setSidebarOpen(false)
+                }}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   active ? 'bg-primary/15 text-primary border border-primary/30' : 'text-muted-foreground hover:text-foreground hover:bg-surface-elevated'
                 }`}
@@ -89,12 +101,20 @@ function AdminLayout() {
             View Portfolio
           </a>
           <div className="flex items-center gap-3 px-3 py-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-primary grid place-items-center text-xs font-bold text-primary-foreground shrink-0">
-              {user?.name?.[0]?.toUpperCase() || 'A'}
-            </div>
+            {user?.profilePhoto ? (
+              <img
+                src={data?.photo}
+                alt={data?.name}
+                className="h-8 w-8 rounded-full object-cover shrink-0 border border-border/50"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-gradient-primary grid place-items-center text-xs font-bold text-primary-foreground shrink-0">
+                {user?.name?.[0]?.toUpperCase() || 'A'}
+              </div>
+            )}
             <div className="min-w-0">
-              <p className="text-xs font-medium truncate">{user?.name || 'Admin'}</p>
-              <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
+              <p className="text-xs font-medium truncate">{data?.name || 'Admin'}</p>
+              <p className="text-[10px] text-muted-foreground truncate">{data?.email}</p>
             </div>
             <button
               onClick={() => logoutMutation.mutate()}

@@ -2,12 +2,12 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { api } from '@/lib/api';
-import { useAuth } from '@/context/AuthContext';
+import type { Profile } from '@/types';
 
 export const Route = createFileRoute('/admin/_auth/settings')({
   component: SettingsPage,
@@ -49,7 +49,11 @@ function PasswordField({ label, name, register, error }: {
 }
 
 function SettingsPage() {
-  const { user } = useAuth();
+  const { data: profile, isLoading: profileLoading } = useQuery<Profile>({
+    queryKey: ['profile'],
+    queryFn: () => api.get('/profile').then((r) => r.data.data).catch(() => null),
+  });
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PwForm>({ resolver: zodResolver(pwSchema) });
 
   const mutation = useMutation({
@@ -65,16 +69,34 @@ function SettingsPage() {
       {/* Account info */}
       <div className="rounded-2xl border border-border bg-surface/60 p-6">
         <h3 className="font-semibold mb-4">Account</h3>
-        <div className="flex items-center gap-4">
-          <div className="h-14 w-14 rounded-2xl bg-gradient-primary grid place-items-center text-xl font-bold text-primary-foreground shadow-glow">
-            {user?.name?.[0]?.toUpperCase() || 'A'}
+        {profileLoading ? (
+          <div className="animate-pulse flex items-center gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-surface/40" />
+            <div className="space-y-2 flex-1">
+              <div className="h-4 w-24 bg-surface/40 rounded" />
+              <div className="h-4 w-32 bg-surface/40 rounded" />
+            </div>
           </div>
-          <div>
-            <p className="font-medium">{user?.name}</p>
-            <p className="text-sm text-muted-foreground">{user?.email}</p>
-            <p className="text-xs text-primary font-mono mt-0.5">Administrator</p>
+        ) : (
+          <div className="flex items-center gap-4">
+            {profile?.photo ? (
+              <img
+                src={profile.photo}
+                alt={profile.name}
+                className="h-14 w-14 rounded-2xl object-cover border border-border/50 shadow-glow"
+              />
+            ) : (
+              <div className="h-14 w-14 rounded-2xl bg-gradient-primary grid place-items-center text-xl font-bold text-primary-foreground shadow-glow">
+                {profile?.name?.[0]?.toUpperCase() || 'A'}
+              </div>
+            )}
+            <div>
+              <p className="font-medium">{profile?.name}</p>
+              <p className="text-sm text-muted-foreground">{profile?.email}</p>
+              <p className="text-xs text-primary font-mono mt-0.5">Administrator</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Change password */}
