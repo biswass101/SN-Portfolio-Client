@@ -2,8 +2,8 @@ import { Mail, Phone, Link as LinkIcon } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/50 mt-24">
-      <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
+    <footer className="border-t border-border/50 mt-12 md:mt-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 md:py-10 flex flex-col md:flex-row items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
           © {new Date().getFullYear()} Syed Nayeem Hossain. Crafted with care.
         </p>

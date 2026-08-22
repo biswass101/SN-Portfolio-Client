@@ -30,7 +30,7 @@ function AboutPage() {
   const skills = skillsQuery.data || [];
 
   return (
-    <div className="px-6">
+    <div className="px-4 sm:px-6">
       <section className="mx-auto max-w-6xl py-12">
         <SectionHeading
           eyebrow="About Me"
@@ -39,7 +39,7 @@ function AboutPage() {
         />
 
         {/* Summary */}
-        <div className="mt-16 grid lg:grid-cols-[1fr_1.4fr] gap-12 items-start">
+        <div className="mt-12 md:mt-16 grid lg:grid-cols-[1fr_1.4fr] gap-8 lg:gap-12 items-start">
           <Reveal>
             <div className="relative max-w-xs mx-auto lg:mx-0">
               {profile ? (
@@ -75,7 +75,7 @@ function AboutPage() {
         </div>
 
         {/* Skills + Certifications */}
-        <div className="mt-24 grid lg:grid-cols-2 gap-6">
+        <div className="mt-16 md:mt-24 grid sm:grid-cols-2 gap-4 sm:gap-6">
           <Reveal>
             <Card icon={<Award size={20} />} title="Key Skills">
               {skillsQuery.isLoading ? (
@@ -216,7 +216,7 @@ function Card({
         <div className="h-10 w-10 rounded-xl bg-gradient-primary grid place-items-center shadow-glow text-primary-foreground">
           {icon}
         </div>
-        <h3 className="font-display text-xl font-semibold">{title}</h3>
+        <h3 className="font-display text-lg sm:text-xl font-semibold">{title}</h3>
       </div>
       {children}
     </motion.div>

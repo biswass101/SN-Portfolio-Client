@@ -30,7 +30,7 @@ function ProjectsPage() {
   const { data: projects, isLoading } = useProjects();
 
   return (
-    <div className="px-6">
+    <div className="px-4 sm:px-6">
       <section className="mx-auto max-w-6xl py-12">
         <SectionHeading
           eyebrow="Selected Projects"
@@ -38,7 +38,7 @@ function ProjectsPage() {
           description="Each project is a story of careful planning, cross-team alignment, and measurable outcomes."
         />
 
-        <div className="mt-16 grid md:grid-cols-2 gap-6">
+        <div className="mt-10 md:mt-16 grid md:grid-cols-2 gap-4 sm:gap-6">
           {isLoading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <Reveal key={i} delay={(i % 2) * 0.1}>
@@ -54,17 +54,17 @@ function ProjectsPage() {
                       className="group relative h-full rounded-2xl border border-border bg-surface/40 backdrop-blur overflow-hidden hover:border-primary/40 transition-colors"
                     >
                       <div className="absolute -top-20 -right-20 h-48 w-48 rounded-full bg-primary/10 blur-3xl group-hover:bg-primary/20 transition-all duration-700" />
-                      <div className="relative p-7">
-                        <div className="flex items-start justify-between">
-                          <div className="h-14 w-14 rounded-2xl bg-gradient-primary grid place-items-center shadow-glow">
-                            <IconComponent size={22} className="text-primary-foreground" />
+                      <div className="relative p-5 sm:p-7">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="h-11 w-11 sm:h-14 sm:w-14 rounded-2xl bg-gradient-primary grid place-items-center shadow-glow shrink-0">
+                            <IconComponent size={20} className="text-primary-foreground" />
                           </div>
-                          <span className="font-mono text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full bg-accent/15 border border-accent/30 text-accent">
+                          <span className="font-mono text-xs uppercase tracking-widest px-2.5 py-1 rounded-full bg-accent/15 border border-accent/30 text-accent">
                             {p.tag}
                           </span>
                         </div>
 
-                        <h3 className="mt-5 text-xl font-display font-bold">{p.title}</h3>
+                        <h3 className="mt-4 sm:mt-5 text-lg sm:text-xl font-display font-bold">{p.title}</h3>
                         <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
                           {p.description}
                         </p>
