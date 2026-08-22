@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -11,11 +11,21 @@ import {
   Database,
   Network,
   Cpu,
+  ChevronDown,
+  FileText,
+  Globe,
 } from "lucide-react";
 import { Reveal } from "../components/Reveal";
 import { SectionHeading } from "../components/SectionHeading";
 import { Skeleton, SkeletonCard, SkeletonText, SkeletonParagraph } from "../components/Skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 import { useProfile, useSkills } from "../hooks/usePortfolioData";
+import { downloadWebsiteAsPdf } from "../lib/downloadWebsitePdf";
 import nayeem from "@/assets/nayeem.jpeg";
 
 export const Route = createFileRoute("/")({
@@ -42,17 +52,23 @@ const iconMap: Record<string, any> = {
 };
 
 function HomePage() {
+  const router = useRouter();
   const profileQuery = useProfile();
   const skillsQuery = useSkills();
 
   const profile = profileQuery.data;
   const skills = skillsQuery.data || [];
 
+  const handleDownloadWebsite = () => {
+    const navigate = (to: string) => router.navigate({ to });
+    downloadWebsiteAsPdf(navigate);
+  };
+
   return (
-    <div className="px-6">
+    <div className="px-4 sm:px-6">
       {/* HERO */}
-      <section className="mx-auto max-w-6xl pt-8 pb-24 md:pt-16 md:pb-32">
-        <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 items-center">
+      <section className="mx-auto max-w-6xl pt-8 pb-16 md:pt-16 md:pb-32">
+        <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-12 items-center">
           <div>
             {profile ? (
               <>
@@ -70,7 +86,7 @@ function HomePage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.1 }}
-                  className="mt-6 text-5xl md:text-7xl font-bold tracking-tight leading-[1.05]"
+                  className="mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]"
                 >
                   {profile.name.split(" ")[0]}
                   <br />
@@ -81,7 +97,7 @@ function HomePage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.2 }}
-                  className="mt-5 text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed"
+                  className="mt-5 text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed"
                 >
                   {profile.bio[0]}
                 </motion.p>
@@ -92,20 +108,47 @@ function HomePage() {
                   transition={{ duration: 0.7, delay: 0.3 }}
                   className="mt-8 flex flex-wrap gap-3"
                 >
-                  <Link
-                    to="/contact"
+                  <a
+                    href={`mailto:${profile.email}`}
                     className="group inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-[1.03] transition-transform"
                   >
-                    Let's Connect
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                  <Link
-                    to="/experience"
-                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/50 backdrop-blur px-6 py-3.5 text-sm font-semibold hover:bg-surface transition-colors"
-                  >
-                    <Download size={16} />
-                    View Experience
-                  </Link>
+                    Email Me
+                    <Mail size={16} className="group-hover:translate-x-1 transition-transform" />
+                  </a>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/50 backdrop-blur px-6 py-3.5 text-sm font-semibold hover:bg-surface transition-colors">
+                        <Download size={16} />
+                        Download
+                        <ChevronDown size={14} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem asChild>
+                        <a
+                          href={profile.resume || '#'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`cursor-pointer flex items-start gap-3 py-3 ${!profile.resume ? 'opacity-50 pointer-events-none' : ''}`}
+                        >
+                          <FileText size={18} className="text-primary mt-0.5 shrink-0" />
+                          <div className="flex flex-col">
+                            <span className="font-semibold">Resume (PDF)</span>
+                            <span className="text-xs text-muted-foreground">{profile.resume ? 'My professional CV' : 'Not uploaded yet'}</span>
+                          </div>
+                        </a>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <button onClick={handleDownloadWebsite} className="cursor-pointer flex items-start gap-3 py-3 w-full">
+                          <Globe size={18} className="text-primary mt-0.5 shrink-0" />
+                          <div className="flex flex-col text-left">
+                            <span className="font-semibold">Website</span>
+                            <span className="text-xs text-muted-foreground">Offline portfolio version</span>
+                          </div>
+                        </button>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </motion.div>
 
                 <motion.div
@@ -160,12 +203,12 @@ function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
                 </div>
 
-                {/* Floating cards */}
+                {/* Floating cards — hidden on small screens to prevent overflow */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.8, duration: 0.6 }}
-                  className="absolute -left-6 top-12 glass rounded-2xl p-3 shadow-card"
+                  className="hidden sm:block absolute -left-6 top-12 glass rounded-2xl p-3 shadow-card"
                 >
                   <div className="flex items-center gap-2">
                     <div className="h-9 w-9 rounded-xl bg-primary/20 grid place-items-center">
@@ -182,7 +225,7 @@ function HomePage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1, duration: 0.6 }}
-                  className="absolute -right-4 bottom-16 glass rounded-2xl p-3 shadow-card"
+                  className="hidden sm:block absolute -right-4 bottom-16 glass rounded-2xl p-3 shadow-card"
                 >
                   <div className="flex items-center gap-2">
                     <div className="h-9 w-9 rounded-xl bg-accent/20 grid place-items-center">
@@ -209,12 +252,12 @@ function HomePage() {
           className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-border glass"
         >
           {profile ? (
-            profile.stats.map((s) => (
+            profile.stats.map((s: { label: string; value: string }) => (
               <div
                 key={s.label}
                 className="bg-surface/40 px-6 py-6 text-center hover:bg-surface/80 transition-colors"
               >
-                <p className="text-3xl md:text-4xl font-bold text-gradient font-display">{s.value}</p>
+                <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gradient font-display">{s.value}</p>
                 <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground font-mono">
                   {s.label}
                 </p>
@@ -232,7 +275,7 @@ function HomePage() {
       </section>
 
       {/* SKILLS PREVIEW */}
-      <section className="mx-auto max-w-6xl py-20">
+      <section className="mx-auto max-w-6xl py-12 md:py-20">
         <SectionHeading
           eyebrow="Core Expertise"
           title="Engineering enterprise IT at scale"
@@ -246,7 +289,7 @@ function HomePage() {
                   <SkeletonCard />
                 </Reveal>
               ))
-            : skills.map((s, i) => {
+            : skills.map((s: any, i: number) => {
                 const IconComponent = iconMap[s.icon] || Server;
                 return (
                   <Reveal key={s._id} delay={i * 0.05}>

@@ -16,13 +16,13 @@ export function SectionHeading({ eyebrow, title, description }: Props) {
         </span>
       </Reveal>
       <Reveal delay={0.1}>
-        <h2 className="mt-4 text-4xl md:text-5xl font-bold tracking-tight">
+        <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
           <span className="text-gradient">{title}</span>
         </h2>
       </Reveal>
       {description && (
         <Reveal delay={0.2}>
-          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">{description}</p>
+          <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">{description}</p>
         </Reveal>
       )}
     </div>

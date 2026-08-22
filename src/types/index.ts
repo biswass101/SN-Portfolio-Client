@@ -9,6 +9,7 @@ export interface Profile {
   linkedin: string;
   location: string;
   photo: string;
+  resume: string;
   availableForWork: boolean;
   stats: { label: string; value: string }[];
 }
