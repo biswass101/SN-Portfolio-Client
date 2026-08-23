@@ -16,7 +16,7 @@ export const Route = createFileRoute("/experience")({
         content: "Career timeline: IT Manager at Gildan, Network Operations at Getco. Achievements, projects, and impact.",
       },
       { property: "og:title", content: "Experience — Syed Nayeem Hossain" },
-      { property: "og:description", content: "10+ years across enterprise IT leadership and network operations." },
+      { property: "og:description", content: "12+ years across enterprise IT leadership and network operations." },
     ],
   }),
   component: ExperiencePage,

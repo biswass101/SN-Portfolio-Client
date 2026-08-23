@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Award, GraduationCap, Languages, Users } from "lucide-react";
+import { Award, GraduationCap, Languages } from "lucide-react";
 import { Reveal } from "../components/Reveal";
 import { SectionHeading } from "../components/SectionHeading";
 import { Skeleton, SkeletonText, SkeletonParagraph } from "../components/Skeleton";
-import { useProfile, useSkills } from "../hooks/usePortfolioData";
+import { useProfile, useSkills, useEducations, useCertifications } from "../hooks/usePortfolioData";
 import nayeem from "@/assets/nayeem.jpeg";
 
 export const Route = createFileRoute("/about")({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/about")({
       { title: "About — Syed Nayeem Hossain" },
       {
         name: "description",
-        content: "IT Manager with 10+ years of experience. PMP, RedHat, Cisco certified. Skills, certifications, education, and languages.",
+        content: "Senior IT leader with 12+ years of experience. PMP, RedHat, Cisco, Azure certified. Skills, certifications, education, and languages.",
       },
       { property: "og:title", content: "About Syed Nayeem Hossain" },
       { property: "og:description", content: "Skills, certifications, education and the journey behind the work." },
@@ -25,17 +25,21 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   const profileQuery = useProfile();
   const skillsQuery = useSkills();
+  const educationsQuery = useEducations();
+  const certificationsQuery = useCertifications();
 
   const profile = profileQuery.data;
   const skills = skillsQuery.data || [];
+  const educations = educationsQuery.data || [];
+  const certifications = certificationsQuery.data || [];
 
   return (
     <div className="px-4 sm:px-6">
       <section className="mx-auto max-w-6xl py-12">
         <SectionHeading
           eyebrow="About Me"
-          title="A decade engineering enterprise IT"
-          description="I'm an IT Manager with 10+ years' experience leading IT infrastructure, cloud adoption, and digital transformation projects across manufacturing and enterprise sectors."
+          title="12+ years engineering enterprise IT"
+          description="Senior IT leader directing enterprise technology, ERP/MES transformation, infrastructure, cybersecurity, and IT operations across a five-plant manufacturing network."
         />
 
         {/* Summary */}
@@ -106,7 +110,7 @@ function AboutPage() {
 
           <Reveal delay={0.1}>
             <Card icon={<Award size={20} />} title="Certifications">
-              {profileQuery.isLoading ? (
+              {certificationsQuery.isLoading ? (
                 <div className="space-y-3">
                   {Array.from({ length: 4 }).map((_, i) => (
                     <SkeletonText key={i} />
@@ -114,17 +118,19 @@ function AboutPage() {
                 </div>
               ) : (
                 <ul className="space-y-3">
-                  {profile?.bio[1] ? (
+                  {certifications.map((cert: any, i: number) => (
                     <motion.li
+                      key={cert._id}
                       initial={{ opacity: 0, x: -10 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
+                      transition={{ delay: i * 0.05 }}
                       className="flex items-start gap-3 text-sm"
                     >
                       <span className="mt-2 h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
-                      <span>{profile.bio[1]}</span>
+                      <span>{cert.title}{cert.issuer ? ` — ${cert.issuer}` : ''}</span>
                     </motion.li>
-                  ) : null}
+                  ))}
                 </ul>
               )}
             </Card>
@@ -132,9 +138,9 @@ function AboutPage() {
 
           <Reveal>
             <Card icon={<GraduationCap size={20} />} title="Education">
-              {profileQuery.isLoading ? (
+              {educationsQuery.isLoading ? (
                 <div className="space-y-4">
-                  {Array.from({ length: 3 }).map((_, i) => (
+                  {Array.from({ length: 2 }).map((_, i) => (
                     <div key={i}>
                       <SkeletonText />
                       <Skeleton className="h-3 w-24 mt-2" />
@@ -143,53 +149,39 @@ function AboutPage() {
                 </div>
               ) : (
                 <ul className="space-y-4">
-                  <li>
-                    <p className="font-semibold text-foreground text-sm">B.Sc. in Computer Science & Engineering</p>
-                    <p className="text-sm text-muted-foreground mt-0.5">Daffodil International University, Dhaka</p>
-                  </li>
-                  <li>
-                    <p className="font-semibold text-foreground text-sm">Higher Secondary Certificate</p>
-                    <p className="text-sm text-muted-foreground mt-0.5">CODA, Dhaka</p>
-                  </li>
-                  <li>
-                    <p className="font-semibold text-foreground text-sm">Secondary School Certificate</p>
-                    <p className="text-sm text-muted-foreground mt-0.5">CODA, Dhaka</p>
-                  </li>
+                  {educations.map((edu: any) => (
+                    <li key={edu._id}>
+                      <p className="font-semibold text-foreground text-sm">{edu.degree}</p>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {edu.institution}{edu.location ? `, ${edu.location}` : ''}{edu.year ? ` — ${edu.year}` : ''}
+                      </p>
+                    </li>
+                  ))}
                 </ul>
               )}
             </Card>
           </Reveal>
 
           <Reveal delay={0.1}>
-            <Card icon={<Languages size={20} />} title="Languages & Activities">
-              <div className="space-y-4">
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono mb-2">Languages</p>
-                  <div className="flex gap-2 flex-wrap">
-                    <span className="px-3 py-1 rounded-full bg-primary/15 border border-primary/30 text-sm">
-                      Bengali — Native
-                    </span>
-                    <span className="px-3 py-1 rounded-full bg-accent/15 border border-accent/30 text-sm">
-                      English — Fluent
-                    </span>
-                  </div>
+            <Card icon={<Languages size={20} />} title="Languages">
+              {profileQuery.isLoading ? (
+                <div className="flex gap-2 flex-wrap">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <Skeleton key={i} className="h-8 w-32 rounded-full" />
+                  ))}
                 </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono mb-2">
-                    Leadership
-                  </p>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-start gap-2">
-                      <Users size={14} className="text-primary mt-1 shrink-0" />
-                      Former Secretary, DIU Computer Club
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Users size={14} className="text-primary mt-1 shrink-0" />
-                      Google Maps Contributor
-                    </li>
-                  </ul>
+              ) : (
+                <div className="flex gap-2 flex-wrap">
+                  {(profile?.languages || []).map((lang: any, i: number) => (
+                    <span
+                      key={i}
+                      className={`px-3 py-1 rounded-full text-sm ${i === 0 ? 'bg-primary/15 border border-primary/30' : 'bg-accent/15 border border-accent/30'}`}
+                    >
+                      {lang.language} — {lang.proficiency}
+                    </span>
+                  ))}
                 </div>
-              </div>
+              )}
             </Card>
           </Reveal>
         </div>
