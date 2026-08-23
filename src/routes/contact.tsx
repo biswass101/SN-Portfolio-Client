@@ -8,6 +8,8 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Reveal } from "../components/Reveal";
 import { SectionHeading } from "../components/SectionHeading";
+import { Skeleton } from "../components/Skeleton";
+import { useProfile } from "../hooks/usePortfolioData";
 import { api } from "@/lib/api";
 
 export const Route = createFileRoute("/contact")({
@@ -21,13 +23,6 @@ export const Route = createFileRoute("/contact")({
   }),
   component: ContactPage,
 });
-
-const channels = [
-  { icon: Mail, label: "Email", value: "sdnayeem27@gmail.com", href: "mailto:sdnayeem27@gmail.com" },
-  { icon: Phone, label: "Phone", value: "+880 1973 629336", href: "tel:+8801973629336" },
-  { icon: LinkIcon, label: "LinkedIn", value: "linkedin.com/in/syed-nayeem-hossain", href: "https://linkedin.com/in/syed-nayeem-hossain" },
-  { icon: MapPin, label: "Location", value: "Dhaka, Bangladesh", href: null },
-];
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -90,6 +85,15 @@ function ContactForm() {
 }
 
 function ContactPage() {
+  const { data: profile, isLoading } = useProfile();
+
+  const channels = profile ? [
+    { icon: Mail, label: "Email", value: profile.email, href: `mailto:${profile.email}` },
+    { icon: Phone, label: "Phone", value: profile.phone, href: `tel:${profile.phone.replace(/\s/g, '')}` },
+    { icon: LinkIcon, label: "LinkedIn", value: profile.linkedin?.replace('https://', ''), href: profile.linkedin },
+    { icon: MapPin, label: "Location", value: profile.location, href: null },
+  ].filter((c) => c.value) : [];
+
   return (
     <div className="px-4 sm:px-6">
       <section className="mx-auto max-w-5xl py-12">
@@ -100,30 +104,36 @@ function ContactPage() {
         />
 
         <div className="mt-16 grid md:grid-cols-2 gap-5">
-          {channels.map((c, i) => {
-            const content = (
-              <motion.div
-                whileHover={c.href ? { y: -4 } : {}}
-                className={`group relative h-full rounded-2xl border border-border bg-surface/40 backdrop-blur p-6 transition-colors ${c.href ? "hover:border-primary/40" : ""}`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-primary grid place-items-center shadow-glow shrink-0">
-                    <c.icon size={20} className="text-primary-foreground" />
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-2xl" />
+            ))
+          ) : (
+            channels.map((c, i) => {
+              const content = (
+                <motion.div
+                  whileHover={c.href ? { y: -4 } : {}}
+                  className={`group relative h-full rounded-2xl border border-border bg-surface/40 backdrop-blur p-6 transition-colors ${c.href ? "hover:border-primary/40" : ""}`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-primary grid place-items-center shadow-glow shrink-0">
+                      <c.icon size={20} className="text-primary-foreground" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono">{c.label}</p>
+                      <p className="mt-1 font-semibold text-foreground break-all">{c.value}</p>
+                    </div>
+                    {c.href && <ArrowUpRight size={18} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono">{c.label}</p>
-                    <p className="mt-1 font-semibold text-foreground break-all">{c.value}</p>
-                  </div>
-                  {c.href && <ArrowUpRight size={18} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />}
-                </div>
-              </motion.div>
-            );
-            return (
-              <Reveal key={c.label} delay={i * 0.05}>
-                {c.href ? <a href={c.href} target={c.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">{content}</a> : content}
-              </Reveal>
-            );
-          })}
+                </motion.div>
+              );
+              return (
+                <Reveal key={c.label} delay={i * 0.05}>
+                  {c.href ? <a href={c.href} target={c.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">{content}</a> : content}
+                </Reveal>
+              );
+            })
+          )}
         </div>
 
         {/* Contact Form */}

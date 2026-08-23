@@ -23,7 +23,9 @@ import { Route as AdminAuthProjectsRouteImport } from './routes/admin/_auth/proj
 import { Route as AdminAuthProfileRouteImport } from './routes/admin/_auth/profile'
 import { Route as AdminAuthMessagesRouteImport } from './routes/admin/_auth/messages'
 import { Route as AdminAuthExperienceRouteImport } from './routes/admin/_auth/experience'
+import { Route as AdminAuthEducationRouteImport } from './routes/admin/_auth/education'
 import { Route as AdminAuthDashboardRouteImport } from './routes/admin/_auth/dashboard'
+import { Route as AdminAuthCertificationsRouteImport } from './routes/admin/_auth/certifications'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -94,9 +96,19 @@ const AdminAuthExperienceRoute = AdminAuthExperienceRouteImport.update({
   path: '/experience',
   getParentRoute: () => AdminAuthRoute,
 } as any)
+const AdminAuthEducationRoute = AdminAuthEducationRouteImport.update({
+  id: '/education',
+  path: '/education',
+  getParentRoute: () => AdminAuthRoute,
+} as any)
 const AdminAuthDashboardRoute = AdminAuthDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AdminAuthRoute,
+} as any)
+const AdminAuthCertificationsRoute = AdminAuthCertificationsRouteImport.update({
+  id: '/certifications',
+  path: '/certifications',
   getParentRoute: () => AdminAuthRoute,
 } as any)
 
@@ -108,7 +120,9 @@ export interface FileRoutesByFullPath {
   '/experience': typeof ExperienceRoute
   '/projects': typeof ProjectsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/certifications': typeof AdminAuthCertificationsRoute
   '/admin/dashboard': typeof AdminAuthDashboardRoute
+  '/admin/education': typeof AdminAuthEducationRoute
   '/admin/experience': typeof AdminAuthExperienceRoute
   '/admin/messages': typeof AdminAuthMessagesRoute
   '/admin/profile': typeof AdminAuthProfileRoute
@@ -124,7 +138,9 @@ export interface FileRoutesByTo {
   '/experience': typeof ExperienceRoute
   '/projects': typeof ProjectsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/certifications': typeof AdminAuthCertificationsRoute
   '/admin/dashboard': typeof AdminAuthDashboardRoute
+  '/admin/education': typeof AdminAuthEducationRoute
   '/admin/experience': typeof AdminAuthExperienceRoute
   '/admin/messages': typeof AdminAuthMessagesRoute
   '/admin/profile': typeof AdminAuthProfileRoute
@@ -142,7 +158,9 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRoute
   '/admin/_auth': typeof AdminAuthRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/_auth/certifications': typeof AdminAuthCertificationsRoute
   '/admin/_auth/dashboard': typeof AdminAuthDashboardRoute
+  '/admin/_auth/education': typeof AdminAuthEducationRoute
   '/admin/_auth/experience': typeof AdminAuthExperienceRoute
   '/admin/_auth/messages': typeof AdminAuthMessagesRoute
   '/admin/_auth/profile': typeof AdminAuthProfileRoute
@@ -160,7 +178,9 @@ export interface FileRouteTypes {
     | '/experience'
     | '/projects'
     | '/admin/login'
+    | '/admin/certifications'
     | '/admin/dashboard'
+    | '/admin/education'
     | '/admin/experience'
     | '/admin/messages'
     | '/admin/profile'
@@ -176,7 +196,9 @@ export interface FileRouteTypes {
     | '/experience'
     | '/projects'
     | '/admin/login'
+    | '/admin/certifications'
     | '/admin/dashboard'
+    | '/admin/education'
     | '/admin/experience'
     | '/admin/messages'
     | '/admin/profile'
@@ -193,7 +215,9 @@ export interface FileRouteTypes {
     | '/projects'
     | '/admin/_auth'
     | '/admin/login'
+    | '/admin/_auth/certifications'
     | '/admin/_auth/dashboard'
+    | '/admin/_auth/education'
     | '/admin/_auth/experience'
     | '/admin/_auth/messages'
     | '/admin/_auth/profile'
@@ -311,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthExperienceRouteImport
       parentRoute: typeof AdminAuthRoute
     }
+    '/admin/_auth/education': {
+      id: '/admin/_auth/education'
+      path: '/education'
+      fullPath: '/admin/education'
+      preLoaderRoute: typeof AdminAuthEducationRouteImport
+      parentRoute: typeof AdminAuthRoute
+    }
     '/admin/_auth/dashboard': {
       id: '/admin/_auth/dashboard'
       path: '/dashboard'
@@ -318,11 +349,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthDashboardRouteImport
       parentRoute: typeof AdminAuthRoute
     }
+    '/admin/_auth/certifications': {
+      id: '/admin/_auth/certifications'
+      path: '/certifications'
+      fullPath: '/admin/certifications'
+      preLoaderRoute: typeof AdminAuthCertificationsRouteImport
+      parentRoute: typeof AdminAuthRoute
+    }
   }
 }
 
 interface AdminAuthRouteChildren {
+  AdminAuthCertificationsRoute: typeof AdminAuthCertificationsRoute
   AdminAuthDashboardRoute: typeof AdminAuthDashboardRoute
+  AdminAuthEducationRoute: typeof AdminAuthEducationRoute
   AdminAuthExperienceRoute: typeof AdminAuthExperienceRoute
   AdminAuthMessagesRoute: typeof AdminAuthMessagesRoute
   AdminAuthProfileRoute: typeof AdminAuthProfileRoute
@@ -332,7 +372,9 @@ interface AdminAuthRouteChildren {
 }
 
 const AdminAuthRouteChildren: AdminAuthRouteChildren = {
+  AdminAuthCertificationsRoute: AdminAuthCertificationsRoute,
   AdminAuthDashboardRoute: AdminAuthDashboardRoute,
+  AdminAuthEducationRoute: AdminAuthEducationRoute,
   AdminAuthExperienceRoute: AdminAuthExperienceRoute,
   AdminAuthMessagesRoute: AdminAuthMessagesRoute,
   AdminAuthProfileRoute: AdminAuthProfileRoute,

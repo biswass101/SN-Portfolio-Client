@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouter, useLocation } fr
 import { useState } from 'react';
 import {
   LayoutDashboard, FolderOpen, Briefcase, Zap, MessageSquare, User, LogOut,
-  Menu, X, ChevronRight, Settings, ExternalLink,
+  Menu, X, ChevronRight, Settings, ExternalLink, GraduationCap, Award,
 } from 'lucide-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -20,6 +20,8 @@ const navItems = [
   { to: '/admin/projects', label: 'Projects', icon: FolderOpen },
   { to: '/admin/experience', label: 'Experience', icon: Briefcase },
   { to: '/admin/skills', label: 'Skills', icon: Zap },
+  { to: '/admin/education', label: 'Education', icon: GraduationCap },
+  { to: '/admin/certifications', label: 'Certifications', icon: Award },
   { to: '/admin/messages', label: 'Messages', icon: MessageSquare },
   { to: '/admin/settings', label: 'Settings', icon: Settings },
 ];

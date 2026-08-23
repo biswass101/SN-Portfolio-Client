@@ -31,16 +31,16 @@ import nayeem from "@/assets/nayeem.jpeg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Syed Nayeem Hossain — IT Manager & Infrastructure Expert" },
+      { title: "Syed Nayeem Hossain — Enterprise Technology & ERP Transformation" },
       {
         name: "description",
         content:
-          "IT Manager with 10+ years leading infrastructure, cloud adoption, ERP and digital transformation across enterprise sectors.",
+          "Senior IT leader with 12+ years directing enterprise technology, ERP/MES transformation, infrastructure, and cybersecurity across a five-plant manufacturing network.",
       },
-      { property: "og:title", content: "Syed Nayeem Hossain — IT Manager" },
+      { property: "og:title", content: "Syed Nayeem Hossain — Multi-Site IT Leadership" },
       {
         property: "og:description",
-        content: "10+ years of enterprise IT leadership. PMP, RedHat, Cisco certified.",
+        content: "12+ years of enterprise IT leadership. PMP, RHCSA, RHCE, CCNA, Azure certified.",
       },
     ],
   }),
@@ -203,40 +203,44 @@ function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
                 </div>
 
-                {/* Floating cards — hidden on small screens to prevent overflow */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8, duration: 0.6 }}
-                  className="hidden sm:block absolute -left-6 top-12 glass rounded-2xl p-3 shadow-card"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="h-9 w-9 rounded-xl bg-primary/20 grid place-items-center">
-                      <Shield size={16} className="text-primary" />
+                {/* Floating cards — dynamic from profile highlights */}
+                {profile.highlights?.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.8, duration: 0.6 }}
+                    className="hidden sm:block absolute -left-6 top-12 glass rounded-2xl p-3 shadow-card"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="h-9 w-9 rounded-xl bg-primary/20 grid place-items-center">
+                        {(() => { const Icon = iconMap[profile.highlights[0].icon] || Shield; return <Icon size={16} className="text-primary" />; })()}
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">{profile.highlights[0].label}</p>
+                        <p className="text-sm font-semibold">{profile.highlights[0].value}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Certified</p>
-                      <p className="text-sm font-semibold">PMP · CISSP</p>
-                    </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                )}
 
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1, duration: 0.6 }}
-                  className="hidden sm:block absolute -right-4 bottom-16 glass rounded-2xl p-3 shadow-card"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="h-9 w-9 rounded-xl bg-accent/20 grid place-items-center">
-                      <Cloud size={16} className="text-accent" />
+                {profile.highlights?.length > 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1, duration: 0.6 }}
+                    className="hidden sm:block absolute -right-4 bottom-16 glass rounded-2xl p-3 shadow-card"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="h-9 w-9 rounded-xl bg-accent/20 grid place-items-center">
+                        {(() => { const Icon = iconMap[profile.highlights[1].icon] || Cloud; return <Icon size={16} className="text-accent" />; })()}
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">{profile.highlights[1].label}</p>
+                        <p className="text-sm font-semibold">{profile.highlights[1].value}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Cloud Migration</p>
-                      <p className="text-sm font-semibold">Zero Downtime</p>
-                    </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                )}
               </div>
             ) : (
               <Skeleton className="h-96 rounded-3xl" />

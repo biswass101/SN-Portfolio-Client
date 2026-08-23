@@ -12,6 +12,8 @@ export interface Profile {
   resume: string;
   availableForWork: boolean;
   stats: { label: string; value: string }[];
+  languages: { language: string; proficiency: string }[];
+  highlights: { label: string; value: string; icon: string }[];
 }
 
 export interface Project {
@@ -48,6 +50,27 @@ export interface Skill {
   text: string;
   icon: string;
   category: string;
+  order: number;
+  isVisible: boolean;
+}
+
+export interface Education {
+  _id: string;
+  degree: string;
+  institution: string;
+  location: string;
+  year: string;
+  description: string;
+  order: number;
+  isVisible: boolean;
+}
+
+export interface Certification {
+  _id: string;
+  title: string;
+  issuer: string;
+  year: string;
+  description: string;
   order: number;
   isVisible: boolean;
 }

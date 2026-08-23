@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useProfile } from "../hooks/usePortfolioData";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -15,6 +16,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { scrollY } = useScroll();
+  const { data: profile } = useProfile();
 
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 20));
 
@@ -35,11 +37,13 @@ export function Navbar() {
         >
           <Link to="/" className="flex items-center gap-2 group">
             <div className="relative h-9 w-9 rounded-xl bg-gradient-primary grid place-items-center shadow-glow">
-              <span className="font-display font-bold text-primary-foreground text-sm">SN</span>
+              <span className="font-display font-bold text-primary-foreground text-sm">
+                {profile?.name ? profile.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('') : 'SN'}
+              </span>
               <div className="absolute inset-0 rounded-xl bg-gradient-primary blur-md opacity-50 group-hover:opacity-80 transition-opacity -z-10" />
             </div>
             <span className="font-display font-semibold tracking-tight hidden sm:block">
-              Syed Nayeem
+              {profile?.name ? profile.name.split(' ').slice(0, 2).join(' ') : ''}
             </span>
           </Link>
 
